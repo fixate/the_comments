@@ -18,8 +18,8 @@ module TheComments
       validates :raw_content, presence: true
 
       # relations
-      belongs_to :user
-      belongs_to :holder, class_name: :User
+      belongs_to :user, polymorphic: true
+      belongs_to :holder, polymorphic: true
       belongs_to :commentable, polymorphic: true
 
       # callbacks
@@ -35,7 +35,7 @@ module TheComments
       hash = Digest::MD5.hexdigest(src)
       "https://2.gravatar.com/avatar/#{hash}?s=42&d=https://identicons.github.com/#{hash}.png"
     end
-      
+
     def mark_as_spam
       count = self_and_descendants.update_all({spam: true})
       update_spam_counter
@@ -64,7 +64,7 @@ module TheComments
 
     def define_holder
       c = self.commentable
-      self.holder = c.is_a?(User) ? c : c.try(:user)
+      self.holder = c.try(:holder) || c.try(:user)
     end
 
     def define_default_state
@@ -86,7 +86,7 @@ module TheComments
     # We have few unuseful requests
     # I impressed that I found it and reduce DB requests
     # Awesome logic pazzl! I'm really pedant :D
-    def update_cache_counters    
+    def update_cache_counters
       user.try :recalculate_my_comments_counter!
 
       if holder

@@ -15,7 +15,9 @@ ActiveRecord::Schema.define(version: 20131027185334) do
 
   create_table "comments", force: true do |t|
     t.integer  "user_id"
+    t.string   "user_type"
     t.integer  "holder_id"
+    t.string   "holder_type"
     t.integer  "commentable_id"
     t.string   "commentable_type"
     t.string   "commentable_url"
@@ -40,6 +42,9 @@ ActiveRecord::Schema.define(version: 20131027185334) do
     t.datetime "created_at"
     t.datetime "updated_at"
   end
+
+  add_index "comments", ["holder_id", "holder_type"], name: "index_comments_on_holder_id_and_holder_type"
+  add_index "comments", ["user_id", "user_type"], name: "index_comments_on_user_id_and_user_type"
 
   create_table "posts", force: true do |t|
     t.integer  "user_id"

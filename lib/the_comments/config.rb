@@ -18,6 +18,7 @@ module TheComments
                     :empty_inputs,
                     :default_title,
                     :template_engine,
+                    :manage_users,
                     :empty_trap_protection,
                     :tolerance_time_protection
   end
@@ -30,6 +31,7 @@ module TheComments
     config.empty_inputs        = [:message]
     config.default_title       = 'Undefined title'
     config.template_engine     = :haml
+    config.manage_users        = [:user]
 
     config.empty_trap_protection     = true
     config.tolerance_time_protection = true

@@ -49,6 +49,12 @@ module TheComments
       before_action -> { return render(json: { errors: @errors }) unless @errors.blank? }, only: [:create]
     end
 
+    def current_comments_user
+      if defined?(super)
+        super
+      end || try(:current_user)
+    end
+
     # App side methods (you can overwrite them)
     def index
       @comments = ::Comment.with_state(:published).recent.page(params[:page])
@@ -56,25 +62,25 @@ module TheComments
     end
 
     def manage
-      @comments = current_user.comcoms.active.recent.page(params[:page])
+      @comments = current_comments_user.comcoms.active.recent.page(params[:page])
       render comment_template(:manage)
     end
 
     def my_comments
-      @comments = current_user.my_comments.active.recent.page(params[:page])
+      @comments = current_comments_user.my_comments.active.recent.page(params[:page])
       render comment_template(:my_comments)
     end
 
     def edit
-      @comments = current_user.comcoms.where(id: params[:id]).page(params[:page])
+      @comments = current_comments_user.comcoms.where(id: params[:id]).page(params[:page])
       render comment_template(:manage)
     end
 
-    # Methods based on *current_user* helper
+    # Methods based on *current_comments_user* helper
     # Methods for admin
     %w[draft published deleted].each do |state|
       define_method "#{state}" do
-        @comments = current_user.comcoms.with_state(state).recent.page(params[:page])
+        @comments = current_comments_user.comcoms.with_state(state).recent.page(params[:page])
         render comment_template(:manage)
       end
 
@@ -85,14 +91,14 @@ module TheComments
 
       unless state == 'deleted'
         define_method "my_#{state}" do
-          @comments = current_user.my_comments.with_state(state).recent.page(params[:page])
+          @comments = current_comments_user.my_comments.with_state(state).recent.page(params[:page])
           render comment_template(:my_comments)
         end
       end
     end
 
     def spam
-      @comments = current_user.comcoms.where(spam: true).recent.page(params[:page])
+      @comments = current_comments_user.comcoms.where(spam: true).recent.page(params[:page])
       render comment_template(:manage)
     end
 
@@ -169,7 +175,7 @@ module TheComments
         .merge(denormalized_fields)
         .merge(request_data_for_comment)
         .merge(tolerance_time: params[:tolerance_time].to_i)
-        .merge(user: current_user, view_token: comments_view_token)
+        .merge(user: current_comments_user, view_token: comments_view_token)
     end
 
     def patch_comment_params

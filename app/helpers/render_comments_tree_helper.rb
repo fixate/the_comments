@@ -8,7 +8,7 @@
 # or use h.html_escape(node.content)
 # for escape potentially dangerous content
 module RenderCommentsTreeHelper
-  module Render 
+  module Render
     class << self
       attr_accessor :h, :options
 
@@ -27,7 +27,7 @@ module RenderCommentsTreeHelper
       end
 
       def moderator?
-        controller.try(:current_user).try(:comments_moderator?, @comment)
+        controller.try(:current_comment_user).try(:comments_moderator?, @comment)
       end
 
       # Render Methods

@@ -3,9 +3,9 @@ class CreateComments < ActiveRecord::Migration
   def change
     create_table :comments do |t|
       # relations
-      t.integer :user_id
-      t.integer :holder_id
-      
+      t.references :user, index: true, polymorphic: true
+      t.references :holder, index: true, polymorphic: true
+
       # polymorphic, commentable object
       t.integer :commentable_id
       t.string  :commentable_type
@@ -17,7 +17,7 @@ class CreateComments < ActiveRecord::Migration
 
       # comment
       t.string :anchor
-      
+
       t.string :title
       t.string :contacts
 
