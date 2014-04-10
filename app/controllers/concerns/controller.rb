@@ -47,6 +47,8 @@ module TheComments
 
       # raise an errors
       before_action -> { return render(json: { errors: @errors }) unless @errors.blank? }, only: [:create]
+
+      helper_method :current_comments_user
     end
 
     def current_comments_user
